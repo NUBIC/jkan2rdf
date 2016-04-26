@@ -1,0 +1,1 @@
+update=LOAD <http://jkan2rdf.dev/datasets.rdf> into graph <http://vitro.mannlib.cornell.edu/default/vitro-kb-2>

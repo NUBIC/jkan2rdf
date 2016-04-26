@@ -1,0 +1,9 @@
+# json formatted datasets 
+# from the jkan project
+datasets/*.json
+
+# output from the datasets-rdf.py script
+public/*.rdf
+public/*.ttl
+
+notes
