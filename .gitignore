@@ -7,3 +7,6 @@ public/*.rdf
 public/*.ttl
 
 notes
+
+*.orig
+*.bak
