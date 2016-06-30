@@ -119,10 +119,16 @@ def graph_dataset(dataset_data):
     # add both rdfs:label and dcterms:title to match dcat ontology and for value to show in vivo
     graph.add((dataset_uri, RDFS.label, Literal(dataset_data['title'].strip())))
     graph.add((dataset_uri, DCTERMS.title, Literal(dataset_data['title'].strip())))
+    
     # add both vivo:description and dcterms:description to match dcat ontology and for value to show in vivo
-    graph.add((dataset_uri, VIVO.description, Literal(dataset_data['notes'].strip())))
-    graph.add((dataset_uri, DCTERMS.description, Literal(dataset_data['notes'].strip())))
-    for kw in dataset_data['category']:
+    # graph.add((dataset_uri, VIVO.description, Literal(dataset_data['notes'].strip())))
+    # graph.add((dataset_uri, DCTERMS.description, Literal(dataset_data['notes'].strip())))
+    graph.add((dataset_uri, VIVO.description, Literal(dataset_data['description'].strip())))
+    graph.add((dataset_uri, DCTERMS.description, Literal(dataset_data['description'].strip())))
+
+    # for kw in dataset_data['category']:
+    #     graph.add((dataset_uri, DCAT.keyword, Literal(kw)))
+    for kw in dataset_data['categories']:
         graph.add((dataset_uri, DCAT.keyword, Literal(kw)))
 
     if 'resources' in dataset_data:
@@ -146,6 +152,7 @@ def graph_dataset(dataset_data):
     if len(dataset_data['organization']) > 0:
         org_uri = URIRef(org_prefix + dataset_data['organization'].replace (" ", "_").lower())
         graph.add((org_uri, RDF.type, FOAF.Organization))
+        graph.add((org_uri, RDFS.label, Literal(dataset_data['organization'])))
         graph.add((dataset_uri, DCTERMS.publisher, org_uri))
 
     return graph
@@ -189,12 +196,13 @@ if __name__ == '__main__':
     dataset_graph = Graph()
     dataset_dir = os.path.dirname(os.path.realpath(__file__)) + '/datasets/'
     for filename in os.listdir(dataset_dir):
-        with open(dataset_dir + filename) as data_file:
-            dataset_data = json.load(data_file)
-            dataset_graph += graph_dataset(dataset_data)
+        if filename.endswith('.json'):
+            with open(dataset_dir + filename) as data_file:
+                dataset_data = json.load(data_file)
+                dataset_graph += graph_dataset(dataset_data)
 
-            triples_file = open('public/datasets.rdf', 'w')
-            print(dataset_graph.serialize(format='pretty-xml').decode('utf-8'), sep="", end="", file=triples_file)
-            # triples_file = open('public/datasets.ttl', 'w')
-            # print(dataset_graph.serialize(format='turtle').decode('utf-8'), sep="", end="", file=triples_file)
-            triples_file.close()
+    triples_file = open('public/datasets.rdf', 'w')
+    print(dataset_graph.serialize(format='pretty-xml').decode('utf-8'), sep="", end="", file=triples_file)
+    # triples_file = open('public/datasets.ttl', 'w')
+    # print(dataset_graph.serialize(format='turtle').decode('utf-8'), sep="", end="", file=triples_file)
+    triples_file.close()
